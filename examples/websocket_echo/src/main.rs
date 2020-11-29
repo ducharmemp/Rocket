@@ -3,24 +3,11 @@ extern crate rocket;
 
 use rocket::http::ContentType;
 use rocket::response::Content;
-use rocket::tungstenite::WsUpgrade;
+use rocket::tungstenite::Websocket;
 
-#[get("/echo", data = "<data>")]
-async fn echo(data: rocket::Data, upgrade: WsUpgrade<'_>) -> rocket::Response<'_> {
-    tokio::spawn(async move {
-        let ws_stream = rocket::tungstenite::on_upgrade(data, None)
-            .await
-            .expect("upgrade failed");
-
-        use crate::rocket::futures::StreamExt;
-        let (write, read) = ws_stream.split();
-        read.take_while(|m| futures::future::ready(m.as_ref().unwrap().is_text()))
-            .forward(write)
-            .await
-            .expect("failed to forward message");
-    });
-
-    upgrade.accept()
+#[get("/echo", data="<ws>")]
+async fn echo(mut ws: Websocket) -> Websocket {
+    ws
 }
 
 #[get("/")]

@@ -430,6 +430,11 @@ pub fn launch(args: TokenStream, input: TokenStream) -> TokenStream {
     emit!(attribute::async_entry::launch_attribute(args, input))
 }
 
+// #[proc_macro_attribute]
+// pub fn websocket(args: TokenStream, input: TokenStream) -> TokenStream {
+//     emit!(attribute::websocket::websocket_attribute(args, input))
+// }
+
 /// Derive for the [`FromFormValue`] trait.
 ///
 /// The [`FromFormValue`] derive can be applied to enums with nullary
