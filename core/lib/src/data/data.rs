@@ -193,4 +193,9 @@ impl Data {
     pub fn peek_complete(&self) -> bool {
         self.is_complete
     }
+
+    #[inline(always)]
+    pub(crate) fn into_hyper_body(self) -> hyper::Body {
+        self.stream.into()
+    }
 }

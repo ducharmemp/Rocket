@@ -1,0 +1,178 @@
+{
+   "agent": "Tungstenite",
+   "behavior": "OK",
+   "behaviorClose": "OK",
+   "case": 254,
+   "closedByMe": true,
+   "createStats": true,
+   "createWirelog": true,
+   "description": "Send text message message with payload of length 16 * 2**20 (16M).",
+   "droppedByMe": false,
+   "duration": 2008,
+   "expectation": "Receive echo'ed text message (with payload as sent).",
+   "expected": {},
+   "expectedClose": {
+      "closeCode": [
+         1000
+      ],
+      "closedByMe": true,
+      "requireClean": true
+   },
+   "failedByMe": false,
+   "httpRequest": "GET /echo HTTP/1.1\r\nUser-Agent: AutobahnTestSuite/0.8.0-0.10.9\r\nHost: host.docker.internal:9001\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nPragma: no-cache\r\nCache-Control: no-cache\r\nSec-WebSocket-Key: 9mgt0VufXEHcROenprMJ1A==\r\nSec-WebSocket-Version: 13\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nconnection: Upgrade\r\nupgrade: websocket\r\nsec-websocket-accept: n5LZqyOAsEpigUmLdkYzo4i02S0=\r\nserver: Rocket\r\ncontent-length: 0\r\ndate: Sat, 02 Jan 2021 01:41:46 GMT\r\n\r\n",
+   "id": "9.1.6",
+   "isServer": false,
+   "localCloseCode": 1000,
+   "localCloseReason": null,
+   "received": [],
+   "remoteCloseCode": 1000,
+   "remoteCloseReason": null,
+   "reportCompressionRatio": false,
+   "reportTime": true,
+   "result": "Received text message of length 16777216.",
+   "resultClose": "Connection was properly closed",
+   "rxFrameStats": {
+      "1": 1,
+      "8": 1
+   },
+   "rxOctetStats": {
+      "4": 1,
+      "201": 2,
+      "211": 1,
+      "1256": 1,
+      "1296": 16,
+      "1460": 309,
+      "2756": 25,
+      "2920": 321,
+      "4216": 27,
+      "4380": 304,
+      "5548": 1,
+      "5676": 37,
+      "5840": 304,
+      "5971": 1,
+      "7136": 25,
+      "7300": 246,
+      "7388": 1,
+      "8173": 1,
+      "8596": 32,
+      "8760": 160,
+      "9183": 1,
+      "10056": 13,
+      "10220": 124,
+      "11516": 17,
+      "11680": 100,
+      "12976": 6,
+      "12979": 1,
+      "13140": 54,
+      "14436": 3,
+      "14600": 37,
+      "15896": 6,
+      "16060": 23,
+      "17356": 4,
+      "17520": 13,
+      "18688": 1,
+      "18816": 4,
+      "18980": 14,
+      "20276": 1,
+      "20440": 12,
+      "21736": 2,
+      "21900": 2,
+      "23196": 4,
+      "23360": 6,
+      "24820": 4,
+      "26116": 3,
+      "26280": 8,
+      "27740": 2,
+      "29036": 2,
+      "31956": 2,
+      "33416": 1,
+      "34876": 2,
+      "35040": 1,
+      "36500": 2,
+      "37796": 1,
+      "37960": 1,
+      "39420": 2,
+      "40880": 1,
+      "43800": 1,
+      "65536": 20
+   },
+   "started": "2021-01-02T01:41:47.413Z",
+   "trafficStats": null,
+   "txFrameStats": {
+      "1": 1,
+      "8": 1
+   },
+   "txOctetStats": {
+      "8": 1,
+      "255": 1,
+      "16777230": 1
+   },
+   "wasClean": true,
+   "wasCloseHandshakeTimeout": false,
+   "wasNotCleanReason": null,
+   "wasOpenHandshakeTimeout": false,
+   "wasServerConnectionDropTimeout": false,
+   "wirelog": [
+      [
+         "TO",
+         [
+            255,
+            "474554202f6563686f20485454502f312e310d0a557365722d4167656e743a204175746f6261686e5465737453756974652f302e382e302d302e31302e390d0a ..."
+         ],
+         false
+      ],
+      [
+         "RO",
+         [
+            201,
+            "485454502f312e312031303120537769746368696e672050726f746f636f6c730d0a636f6e6e656374696f6e3a20557067726164650d0a757067726164653a20 ..."
+         ]
+      ],
+      [
+         "TI",
+         100
+      ],
+      [
+         "TF",
+         [
+            2,
+            "0x03e8"
+         ],
+         8,
+         true,
+         0,
+         "11202366",
+         null,
+         null,
+         false
+      ],
+      [
+         "TO",
+         [
+            8,
+            "88821120236612c8"
+         ],
+         false
+      ],
+      [
+         "RO",
+         [
+            4,
+            "880203e8"
+         ]
+      ],
+      [
+         "RF",
+         [
+            2,
+            "0x03e8"
+         ],
+         8,
+         true,
+         0,
+         false,
+         null
+      ]
+   ]
+}

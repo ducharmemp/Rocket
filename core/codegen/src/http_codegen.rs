@@ -4,7 +4,7 @@ use devise::{FromMeta, MetaItem, Result, ext::{Split2, PathExt, SpanDiagnosticEx
 use crate::proc_macro2::TokenStream;
 use crate::http::{self, ext::IntoOwned};
 use crate::http::uri::{Path, Query};
-use crate::attribute::segments::{parse_segments, parse_data_segment, Segment, Kind};
+use crate::attribute::segments::{parse_segments, parse_data_segment, parse_upgrade_segment, Segment, Kind};
 
 use crate::proc_macro_ext::StringLit;
 
@@ -25,6 +25,9 @@ pub struct Origin(pub http::uri::Origin<'static>);
 
 #[derive(Clone, Debug)]
 pub struct DataSegment(pub Segment);
+
+#[derive(Clone, Debug)]
+pub struct UpgradeSegment(pub Segment);
 
 #[derive(Clone, Debug)]
 pub struct Optional<T>(pub Option<T>);
@@ -188,6 +191,21 @@ impl FromMeta for DataSegment {
         }
 
         Ok(DataSegment(segment))
+    }
+}
+
+impl FromMeta for UpgradeSegment {
+    fn from_meta(meta: MetaItem<'_>) -> Result<Self> {
+        let string = StringLit::from_meta(meta)?;
+        let span = string.subspan(1..(string.len() + 1));
+
+        let segment = parse_upgrade_segment(&string, span)?;
+        if segment.kind != Kind::Single {
+            return Err(span.error("malformed parameter")
+                        .help("parameter must be of the form '<param>'"));
+        }
+
+        Ok(UpgradeSegment(segment))
     }
 }
 

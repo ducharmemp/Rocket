@@ -1,4 +1,4 @@
-use std::borrow::Cow;
+use std::{borrow::Cow, sync::Arc};
 
 use parking_lot::RwLock;
 
@@ -48,7 +48,7 @@ use crate::error::Error;
 /// # });
 /// ```
 pub struct Client {
-    rocket: Rocket,
+    pub (in super) rocket: Arc<Rocket>,
     cookies: RwLock<cookie::CookieJar>,
     pub(in super) tracked: bool,
 }
@@ -60,7 +60,7 @@ impl Client {
     ) -> Result<Client, Error> {
         rocket.prelaunch_check().await?;
         let cookies = RwLock::new(cookie::CookieJar::new());
-        Ok(Client { rocket, tracked, cookies })
+        Ok(Client { rocket: Arc::new(rocket), tracked, cookies })
     }
 
     // WARNING: This is unstable! Do not use this method outside of Rocket!

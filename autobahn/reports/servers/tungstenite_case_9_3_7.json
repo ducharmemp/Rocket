@@ -1,0 +1,175 @@
+{
+   "agent": "Tungstenite",
+   "behavior": "OK",
+   "behaviorClose": "OK",
+   "case": 267,
+   "closedByMe": true,
+   "createStats": true,
+   "createWirelog": true,
+   "description": "Send fragmented text message message with message payload of length 4 * 2**20 (4M). Sent out in fragments of 256k.",
+   "droppedByMe": false,
+   "duration": 802,
+   "expectation": "Receive echo'ed text message (with payload as sent).",
+   "expected": {},
+   "expectedClose": {
+      "closeCode": [
+         1000
+      ],
+      "closedByMe": true,
+      "requireClean": true
+   },
+   "failedByMe": false,
+   "httpRequest": "GET /echo HTTP/1.1\r\nUser-Agent: AutobahnTestSuite/0.8.0-0.10.9\r\nHost: host.docker.internal:9001\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nPragma: no-cache\r\nCache-Control: no-cache\r\nSec-WebSocket-Key: /pKzqteU++UorzkpF9Tl7Q==\r\nSec-WebSocket-Version: 13\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nconnection: Upgrade\r\nupgrade: websocket\r\nsec-websocket-accept: GUdnDltbrbG3Bey/4GuS4k3v4Sk=\r\nserver: Rocket\r\ncontent-length: 0\r\ndate: Sat, 02 Jan 2021 01:41:59 GMT\r\n\r\n",
+   "id": "9.3.7",
+   "isServer": false,
+   "localCloseCode": 1000,
+   "localCloseReason": null,
+   "received": [],
+   "remoteCloseCode": 1000,
+   "remoteCloseReason": null,
+   "reportCompressionRatio": false,
+   "reportTime": true,
+   "result": "Received text message of length 4194304.",
+   "resultClose": "Connection was properly closed",
+   "rxFrameStats": {
+      "1": 1,
+      "8": 1
+   },
+   "rxOctetStats": {
+      "4": 1,
+      "201": 1,
+      "455": 1,
+      "1296": 3,
+      "1460": 62,
+      "1955": 1,
+      "2756": 5,
+      "2920": 87,
+      "4216": 6,
+      "4380": 80,
+      "5676": 6,
+      "5840": 67,
+      "5887": 1,
+      "6440": 1,
+      "6772": 1,
+      "7136": 6,
+      "7300": 55,
+      "8596": 4,
+      "8760": 37,
+      "10056": 5,
+      "10220": 29,
+      "11516": 2,
+      "11680": 17,
+      "11717": 1,
+      "12976": 4,
+      "13140": 9,
+      "14600": 14,
+      "15896": 2,
+      "16060": 5,
+      "17356": 1,
+      "17520": 4,
+      "18816": 1,
+      "18980": 3,
+      "20148": 1,
+      "20276": 3,
+      "20440": 1,
+      "21736": 4,
+      "21900": 2,
+      "23360": 2,
+      "24656": 1,
+      "24820": 2,
+      "26280": 1,
+      "29200": 1,
+      "31956": 1,
+      "32120": 1,
+      "33416": 1,
+      "34876": 1,
+      "35040": 1,
+      "36500": 1,
+      "42176": 1,
+      "42340": 1,
+      "43800": 2,
+      "61156": 1,
+      "65536": 2
+   },
+   "started": "2021-01-02T01:41:59.066Z",
+   "trafficStats": null,
+   "txFrameStats": {
+      "0": 16,
+      "1": 1,
+      "8": 1
+   },
+   "txOctetStats": {
+      "6": 1,
+      "8": 1,
+      "255": 1,
+      "262158": 16
+   },
+   "wasClean": true,
+   "wasCloseHandshakeTimeout": false,
+   "wasNotCleanReason": null,
+   "wasOpenHandshakeTimeout": false,
+   "wasServerConnectionDropTimeout": false,
+   "wirelog": [
+      [
+         "TO",
+         [
+            255,
+            "474554202f6563686f20485454502f312e310d0a557365722d4167656e743a204175746f6261686e5465737453756974652f302e382e302d302e31302e390d0a ..."
+         ],
+         false
+      ],
+      [
+         "RO",
+         [
+            201,
+            "485454502f312e312031303120537769746368696e672050726f746f636f6c730d0a636f6e6e656374696f6e3a20557067726164650d0a757067726164653a20 ..."
+         ]
+      ],
+      [
+         "TI",
+         100
+      ],
+      [
+         "TF",
+         [
+            2,
+            "0x03e8"
+         ],
+         8,
+         true,
+         0,
+         "215cf911",
+         null,
+         null,
+         false
+      ],
+      [
+         "TO",
+         [
+            8,
+            "8882215cf91122b4"
+         ],
+         false
+      ],
+      [
+         "RO",
+         [
+            4,
+            "880203e8"
+         ]
+      ],
+      [
+         "RF",
+         [
+            2,
+            "0x03e8"
+         ],
+         8,
+         true,
+         0,
+         false,
+         null
+      ]
+   ]
+}

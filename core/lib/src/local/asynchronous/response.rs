@@ -4,7 +4,7 @@ use std::{pin::Pin, task::{Context, Poll}};
 
 use tokio::io::AsyncRead;
 
-use crate::http::CookieJar;
+use crate::{http::CookieJar, websocket::Websocket};
 use crate::{Request, Response};
 
 /// An `async` response from a dispatched [`LocalRequest`](super::LocalRequest).
@@ -106,6 +106,10 @@ impl LocalResponse<'_> {
 
     pub(crate) fn _cookies(&self) -> &CookieJar<'_> {
         &self.cookies
+    }
+
+    pub(crate) fn _into_upgrade(mut self) -> Option<Websocket> {
+        self.response.take_upgrade()
     }
 
     pub(crate) async fn _into_string(mut self) -> Option<String> {

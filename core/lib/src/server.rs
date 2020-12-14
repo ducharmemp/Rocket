@@ -19,6 +19,7 @@ use crate::ext::AsyncReadExt;
 use crate::http::{Method, Status, Header, hyper};
 use crate::http::private::{Listener, Connection, Incoming};
 use crate::http::uri::Origin;
+use crate::websocket::Websocket as Upgrade;
 
 // A token returned to force the execution of one method before another.
 pub(crate) struct Token;
@@ -65,8 +66,10 @@ async fn hyper_service_fn(
 
         // Dispatch the request to get a response, then write that response out.
         let token = rocket.preprocess_request(&mut req, &mut data).await;
-        let r = rocket.dispatch(token, &mut req, data).await;
+        let mut r = rocket.dispatch(token, &req, data).await;
+        let upgrade = r.take_upgrade();
         rocket.send_response(r, tx).await;
+        rocket.postprocess_request(&req, upgrade).await;
     });
 
     // Receive the response written to `tx` by the task above.
@@ -208,6 +211,19 @@ impl Rocket {
         }
 
         response
+    }
+
+    // Upgrade the socket (if designated for upgrading)
+    pub(crate) fn postprocess_request<'s, 'r: 's>(
+        &'s self,
+        request: &'r Request<'s>,
+        upgrade: Option<Upgrade>
+    ) -> impl Future<Output = ()> + Send + 's {
+        async move {
+            if let Some(upgrade) = upgrade {
+                upgrade.run(request).await;
+            }
+        }
     }
 
     /// Route the request and process the outcome to eventually get a response.

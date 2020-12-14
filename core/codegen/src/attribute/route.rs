@@ -22,6 +22,7 @@ struct RouteAttribute {
     method: SpanWrapped<Method>,
     path: RoutePath,
     data: Option<SpanWrapped<DataSegment>>,
+    upgrade: Option<SpanWrapped<DataSegment>>,
     format: Option<MediaType>,
     rank: Option<isize>,
 }
@@ -32,6 +33,7 @@ struct MethodRouteAttribute {
     #[meta(naked)]
     path: RoutePath,
     data: Option<SpanWrapped<DataSegment>>,
+    upgrade: Option<SpanWrapped<DataSegment>>,
     format: Option<MediaType>,
     rank: Option<isize>,
 }
@@ -83,6 +85,7 @@ fn parse_route(attr: RouteAttribute, function: syn::ItemFn) -> Result<Route> {
     dup_check(&mut segments, attr.path.path.iter().filter(|s| !s.is_wild()), &mut diags);
     attr.path.query.as_ref().map(|q| dup_check(&mut segments, q.iter(), &mut diags));
     dup_check(&mut segments, attr.data.as_ref().map(|s| &s.value.0).into_iter(), &mut diags);
+    dup_check(&mut segments, attr.upgrade.as_ref().map(|s| &s.value.0).into_iter(), &mut diags);
 
     // Check the validity of function arguments.
     let mut inputs = vec![];
@@ -392,7 +395,7 @@ fn codegen_route(route: Route) -> Result<TokenStream> {
             Some(seg) if seg.source == Source::Path => {
                 parameter_definitions.push(param_expr(seg, rocket_ident, &ty));
             }
-            Some(seg) if seg.source == Source::Data => {
+            Some(seg) if seg.source == Source::Data || seg.source == Source::Upgrade => {
                 // the data statement needs to come last, so record it specially
                 data_stmt = Some(data_expr(rocket_ident, &ty));
             }
@@ -512,6 +515,7 @@ fn incomplete_route(
         },
         path: method_attribute.path,
         data: method_attribute.data,
+        upgrade: method_attribute.upgrade,
         format: method_attribute.format,
         rank: method_attribute.rank,
     };

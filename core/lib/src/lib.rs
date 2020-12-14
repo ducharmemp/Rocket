@@ -120,6 +120,7 @@ pub mod handler;
 pub mod fairing;
 pub mod error;
 pub mod catcher;
+pub mod websocket;
 
 // Reexport of HTTP everything.
 pub mod http {

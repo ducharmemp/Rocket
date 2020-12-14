@@ -68,6 +68,12 @@ impl From<hyper::Body> for AsyncReadBody {
     }
 }
 
+impl Into<hyper::Body> for AsyncReadBody {
+    fn into(self) -> hyper::Body {
+        self.inner
+    }
+}
+
 impl AsyncRead for AsyncReadBody {
     fn poll_read(
         mut self: Pin<&mut Self>,

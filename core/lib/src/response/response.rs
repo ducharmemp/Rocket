@@ -6,6 +6,7 @@ use tokio::io::{AsyncRead, AsyncReadExt, AsyncSeek, AsyncSeekExt};
 
 use crate::response::{self, Responder};
 use crate::http::{Header, HeaderMap, Status, ContentType, Cookie};
+use crate::websocket::Websocket as Upgrade;
 
 /// The default size, in bytes, of a chunk for streamed responses.
 pub const DEFAULT_CHUNK_SIZE: usize = 4096;
@@ -462,6 +463,11 @@ impl<'r> ResponseBuilder<'r> {
         self
     }
 
+    pub fn set_upgrade(&mut self, upgrade: Option<Upgrade>) -> &mut ResponseBuilder<'r> {
+        self.response.set_upgrade(upgrade);
+        self
+    }
+
     /// Merges the `other` `Response` into `self` by setting any fields in
     /// `self` to the corresponding value in `other` if they are set in `other`.
     /// Fields in `self` are unchanged if they are not set in `other`. If a
@@ -598,6 +604,7 @@ pub struct Response<'r> {
     status: Option<Status>,
     headers: HeaderMap<'r>,
     body: Option<ResponseBody<'r>>,
+    upgrade: Option<Upgrade>,
 }
 
 impl<'r> Response<'r> {
@@ -624,6 +631,7 @@ impl<'r> Response<'r> {
             status: None,
             headers: HeaderMap::new(),
             body: None,
+            upgrade: None
         }
     }
 
@@ -1241,6 +1249,14 @@ impl<'r> Response<'r> {
         for (name, mut values) in other.headers.into_iter_raw() {
             self.headers.add_all(name.into_cow(), &mut values);
         }
+    }
+
+    pub fn set_upgrade(&mut self, upgrade: Option<Upgrade>) {
+        self.upgrade = upgrade;
+    }
+
+    pub fn take_upgrade(&mut self) -> Option<Upgrade> {
+        self.upgrade.take()
     }
 }
 

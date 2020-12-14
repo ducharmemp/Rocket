@@ -1,0 +1,12 @@
+{
+	"outdir": "/reports/servers",
+	"servers": [
+		{
+			"agent": "Tungstenite",
+			"url": "ws://host.docker.internal:9001/echo"
+		}
+	],
+	"cases": ["*"],
+	"exclude-cases": [],
+	"exclude-agent-cases": {}
+}

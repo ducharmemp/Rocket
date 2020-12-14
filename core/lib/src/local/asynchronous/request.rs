@@ -1,9 +1,15 @@
 use std::borrow::Cow;
 
-use crate::{Request, Data};
-use crate::http::{Status, Method, uri::Origin, ext::IntoOwned};
+use tokio::io::{duplex, DuplexStream};
+use tokio_tungstenite::{tungstenite::protocol, WebSocketStream};
+
+use crate::http::{ext::IntoOwned, uri::Origin, Header, Method, Status};
+use crate::websocket::AsyncReadWrite;
+use crate::{Data, Request};
 
 use super::{Client, LocalResponse};
+
+impl AsyncReadWrite for DuplexStream {}
 
 /// An `async` local request as returned by [`Client`](super::Client).
 ///
@@ -30,18 +36,14 @@ use super::{Client, LocalResponse};
 /// # });
 /// ```
 pub struct LocalRequest<'c> {
-    pub(in super) client: &'c Client,
-    pub(in super) request: Request<'c>,
+    pub(super) client: &'c Client,
+    pub(super) request: Request<'c>,
     data: Vec<u8>,
     uri: Cow<'c, str>,
 }
 
 impl<'c> LocalRequest<'c> {
-    pub(crate) fn new(
-        client: &'c Client,
-        method: Method,
-        uri: Cow<'c, str>
-    ) -> LocalRequest<'c> {
+    pub(crate) fn new(client: &'c Client, method: Method, uri: Cow<'c, str>) -> LocalRequest<'c> {
         // We try to validate the URI now so that the inner `Request` contains a
         // valid URI. If it doesn't, we set a dummy one.
         let origin = Origin::parse(&uri).unwrap_or_else(|_| Origin::dummy());
@@ -56,7 +58,12 @@ impl<'c> LocalRequest<'c> {
             })
         }
 
-        LocalRequest { client, request, uri, data: vec![] }
+        LocalRequest {
+            client,
+            request,
+            uri,
+            data: vec![],
+        }
     }
 
     pub(crate) fn _request(&self) -> &Request<'c> {
@@ -71,6 +78,10 @@ impl<'c> LocalRequest<'c> {
         &mut self.data
     }
 
+    pub(crate) fn _into_inner(self) -> Request<'c> {
+        self.request
+    }
+
     // Performs the actual dispatch.
     async fn _dispatch(mut self) -> LocalResponse<'c> {
         // First, revalidate the URI, returning an error response (generated
@@ -81,15 +92,17 @@ impl<'c> LocalRequest<'c> {
             error!("Malformed request URI: {}", self.uri);
             return LocalResponse::new(self.request, move |req| {
                 rocket.handle_error(Status::BadRequest, req)
-            }).await
+            })
+            .await;
         }
 
         // Actually dispatch the request.
         let mut data = Data::local(self.data);
-        let token = rocket.preprocess_request(&mut self.request, &mut data).await;
-        let response = LocalResponse::new(self.request, move |req| {
-            rocket.dispatch(token, req, data)
-        }).await;
+        let token = rocket
+            .preprocess_request(&mut self.request, &mut data)
+            .await;
+        let response =
+            LocalResponse::new(self.request, move |req| rocket.dispatch(token, req, data)).await;
 
         // If the client is tracking cookies, updates the internal cookie jar
         // with the changes reflected by `response`.
@@ -110,6 +123,33 @@ impl<'c> LocalRequest<'c> {
         }
 
         response
+    }
+
+    pub async fn _upgrade(mut self) -> WebSocketStream<DuplexStream> {
+        let (client_socket, server_socket) = duplex(2048);
+        self._request_mut().add_header(Header::new("upgrade", "websocket"));
+        self._request_mut().add_header(Header::new("sec-websocket-version", "13"));
+        self._request_mut().add_header(Header::new("sec-websocket-key", "dGhlIHNhbXBsZSBub25jZQ=="));
+
+        let rocket = self.client.rocket.clone();
+        let response = self.dispatch().await;
+        let upgrade = response._into_upgrade().expect("No upgrade available");
+        let handler = upgrade.handler.unwrap();
+
+        tokio::task::spawn(async move {
+            let server = WebSocketStream::from_raw_socket(
+                Box::new(server_socket) as Box<dyn AsyncReadWrite>,
+                protocol::Role::Server,
+                Default::default(),
+            )
+            .await;
+            
+            
+            handler.handle(&Request::new(&rocket, Method::Get, Origin::dummy()), server).await;
+        });
+
+        WebSocketStream::from_raw_socket(client_socket, protocol::Role::Client, Default::default())
+            .await
     }
 
     pub_request_impl!("# use rocket::local::asynchronous::Client;

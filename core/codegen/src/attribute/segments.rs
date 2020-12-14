@@ -24,6 +24,7 @@ pub enum Source {
     Path,
     Query,
     Data,
+    Upgrade,
     Unknown,
 }
 
@@ -134,6 +135,17 @@ fn into_diagnostic(
 }
 
 pub fn parse_data_segment(segment: &str, span: Span) -> PResult<Segment> {
+    <RouteSegment<'_, uri::Query>>::parse_one(segment)
+        .map(|segment| {
+            let mut seg = Segment::from(segment, span);
+            seg.source = Source::Upgrade;
+            seg.index = Some(0);
+            seg
+        })
+        .map_err(|e| into_diagnostic(segment, segment, span, &e))
+}
+
+pub fn parse_upgrade_segment(segment: &str, span: Span) -> PResult<Segment> {
     <RouteSegment<'_, uri::Query>>::parse_one(segment)
         .map(|segment| {
             let mut seg = Segment::from(segment, span);
